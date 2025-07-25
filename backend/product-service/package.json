@@ -1,0 +1,40 @@
+{
+  "name": "product-service",
+  "version": "1.0.0",
+  "description": "Independent Product Microservice",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "set NODE_ENV=production&& node src/server.js",
+    "dev": "set NODE_ENV=development&& nodemon src/server.js",
+    "test": "set NODE_ENV=test&& mocha test/**/*.test.js --timeout 10000 --exit",
+    "test:debug": "set NODE_ENV=test&& mocha test/**/*.test.js --inspect-brk --timeout 10000",
+    "test:watch": "set NODE_ENV=test&& mocha test/**/*.test.js --watch --timeout 10000",
+    "test:coverage": "set NODE_ENV=test&& nyc mocha test/**/*.test.js --timeout 10000 --exit"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "helmet": "^7.0.0",
+    "mongoose": "^7.4.3",
+    "morgan": "^1.10.0",
+    "slugify": "^1.6.6",
+    "winston": "^3.10.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "chai-as-promised": "^7.1.1",
+    "chai-http": "^4.3.0",
+    "eslint": "^8.45.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "faker": "^5.5.3",
+    "husky": "^8.0.3",
+    "mocha": "^11.7.1",
+    "nodemon": "^3.0.1",
+    "nyc": "^15.1.0",
+    "prettier": "^2.8.8",
+    "sinon": "^15.2.0",
+    "supertest": "^6.3.4"
+  }
+}

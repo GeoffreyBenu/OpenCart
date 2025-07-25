@@ -1,0 +1,21 @@
+kind: pipeline
+name: build-and-test
+
+steps:
+  - name: test
+    image: node:14
+    commands:
+      - npm install
+      - npm test
+
+  - name: build-docker
+    image: plugins/docker
+    settings:
+      repo: your-dockerhub/product-service
+      tags: latest
+      username: 
+        from_secret: docker_username
+      password: 
+        from_secret: docker_password
+    when:
+      branch: main
