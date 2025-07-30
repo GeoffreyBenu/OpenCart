@@ -35,7 +35,7 @@ jobs:
     - name: Deploy Order Service
       run: |
         oc new-build --name=order-service --binary --strategy=docker -l app=opencart
-        oc start-build order-service --from-dir=./order-service --follow
+        oc start-build order-service --from-dir=./backend/order-service --follow
         oc new-app order-service -l app=opencart
         oc expose service/order-service
 
@@ -43,7 +43,7 @@ jobs:
     - name: Deploy Payment Service
       run: |
         oc new-build --name=payment-service --binary --strategy=docker -l app=opencart
-        oc start-build payment-service --from-dir=./payment-service --follow
+        oc start-build payment-service --from-dir=./backend/payment-service --follow
         oc new-app payment-service -l app=opencart
         oc expose service/payment-service
 
