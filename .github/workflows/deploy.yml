@@ -23,16 +23,17 @@ jobs:
     - name: Login to OpenShift
       run: oc login --token=${{ secrets.ARO_TOKEN }} --server=${{ secrets.ARO_API_SERVER }}
 
-           # --- DEPLOY PRODUCT SERVICE ---
+# --- DEPLOY PRODUCT SERVICE ---
     - name: Deploy Product Service
       run: |
-        # Delete only the specific components we own. This will not cause a permission error.
-        oc delete deployment,service,route,buildconfig,imagestream -l app=product-service --ignore-not-found=true
+        # Delete components by name to ensure they are gone.
+        oc delete all --selector=app=product-service --ignore-not-found=true
+        oc delete buildconfig,imagestream product-service --ignore-not-found=true
 
-        # Re-create the application
+        # Create the application
         oc new-build --name=product-service --binary --strategy=docker -l app=product-service
         oc start-build product-service --from-dir=./backend/product-service --follow
-        oc new-app product-service
+        oc new-app product-service -l app=product-service
         oc expose service/product-service
 
     # --- DEPLOY ORDER SERVICE ---
