@@ -23,12 +23,16 @@ jobs:
     - name: Login to OpenShift
       run: oc login --token=${{ secrets.ARO_TOKEN }} --server=${{ secrets.ARO_API_SERVER }}
 
-    # --- DEPLOY PRODUCT SERVICE ---
+        # --- DEPLOY PRODUCT SERVICE ---
     - name: Deploy Product Service
       run: |
-        oc new-build --name=product-service --binary --strategy=docker -l app=opencart
+        # Clean up old resources by name before starting
+        oc delete all,route,bc,is -l app=product-service --ignore-not-found=true
+
+        # Re-create the application from scratch
+        oc new-build --name=product-service --binary --strategy=docker -l app=product-service
         oc start-build product-service --from-dir=./backend/product-service --follow
-        oc new-app product-service -l app=opencart
+        oc new-app product-service
         oc expose service/product-service
 
     # --- DEPLOY ORDER SERVICE ---
