@@ -23,14 +23,15 @@ jobs:
     - name: Login to OpenShift
       run: oc login --token=${{ secrets.ARO_TOKEN }} --server=${{ secrets.ARO_API_SERVER }}
 
-# --- DEPLOY PRODUCT SERVICE ---
+    # --- DEPLOY PRODUCT SERVICE ---
     - name: Deploy Product Service
       run: |
-        # Delete components by name to ensure they are gone.
-        oc delete all --selector=app=product-service --ignore-not-found=true
+        # FINAL FIX: Delete ONLY specific components we know exist.
+        # This avoids the forbidden 'all' command entirely.
+        oc delete deployment,service,route -l app=product-service --ignore-not-found=true
         oc delete buildconfig,imagestream product-service --ignore-not-found=true
 
-        # Create the application
+        # Re-create the application
         oc new-build --name=product-service --binary --strategy=docker -l app=product-service
         oc start-build product-service --from-dir=./backend/product-service --follow
         oc new-app product-service -l app=product-service
