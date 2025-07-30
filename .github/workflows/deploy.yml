@@ -1,0 +1,50 @@
+name: Build and Deploy to OpenShift Sandbox
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy-services:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install OpenShift CLI
+      run: |
+        curl -o oc.tar.gz -L https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-linux.tar.gz
+        tar -xvzf oc.tar.gz
+        sudo mv oc /usr/local/bin/
+        sudo mv kubectl /usr/local/bin/
+
+    - name: Login to OpenShift
+      run: oc login --token=${{ secrets.ARO_TOKEN }} --server=${{ secrets.ARO_API_SERVER }}
+
+    # --- DEPLOY PRODUCT SERVICE ---
+    - name: Deploy Product Service
+      run: |
+        oc new-build --name=product-service --binary --strategy=docker -l app=opencart
+        oc start-build product-service --from-dir=./product-service --follow
+        oc new-app product-service -l app=opencart
+        oc expose service/product-service
+
+    # --- DEPLOY ORDER SERVICE ---
+    - name: Deploy Order Service
+      run: |
+        oc new-build --name=order-service --binary --strategy=docker -l app=opencart
+        oc start-build order-service --from-dir=./order-service --follow
+        oc new-app order-service -l app=opencart
+        oc expose service/order-service
+
+    # --- DEPLOY PAYMENT SERVICE ---
+    - name: Deploy Payment Service
+      run: |
+        oc new-build --name=payment-service --binary --strategy=docker -l app=opencart
+        oc start-build payment-service --from-dir=./payment-service --follow
+        oc new-app payment-service -l app=opencart
+        oc expose service/payment-service
+
+    # Add another job for your React frontend if its build process is different
