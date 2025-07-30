@@ -27,7 +27,7 @@ jobs:
     - name: Deploy Product Service
       run: |
         oc new-build --name=product-service --binary --strategy=docker -l app=opencart
-        oc start-build product-service --from-dir=./product-service --follow
+        oc start-build product-service --from-dir=./backend/product-service --follow
         oc new-app product-service -l app=opencart
         oc expose service/product-service
 
